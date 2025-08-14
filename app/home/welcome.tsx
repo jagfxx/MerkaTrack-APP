@@ -1,12 +1,10 @@
-import logoWhite from "./mercatrack-white.svg";
-import logoFull from "./mercatrack-color.svg";
-
 export function Welcome() {
   return (
-    <div className="flex flex-col bg-white w-100">
-      <nav className="flex justify-center align-center bg-gray-50 p-4">
-        <img className="w-32" src={logoFull} alt="MerkaTrack" />
-      </nav>
+    <div className="flex flex-col  bg-white w-[100%] h-[100%]">
+      <h1 className="text-2xl font-bold text-center p-4 text-[#FA8603]">Inventario</h1>
+      <div className="flex flex-col  bg-black  h-[100%]">
+        Objetos aqui
+      </div>
     </div>
   );
 }

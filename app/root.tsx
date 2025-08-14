@@ -9,6 +9,9 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import logoWhite from "./mercatrack-white.svg";
+import logoFull from "./mercatrack-color.svg";
+import { Link } from "react-router";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -32,10 +35,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="flex flex-col justify-center items-center   h-[96vh] overflow-hidden">
+      <nav className="flex justify-center align-center bg-white border-b border-[#FA8603] p-4 h-[10%] w-[100%] shadow-sm">
+        <img className="w-[200px]" src={logoFull} alt="MerkaTrack" />
+      </nav>
         {children}
         <ScrollRestoration />
         <Scripts />
+        <div className="grid grid-cols-5 justify-items-center align-center h-[70px] w-[100%] bg-white/90 border-t border-[#FA8603] mt-auto overflow-hidden" >
+        <Link to="/lists" className="flex col-span-1 overflow-hidden border-r border-[#FA8603] w-[100%] h-[100%] text-center justify-center items-center">List</Link>
+        <Link to="/stats" className="flex col-span-1 overflow-hidden border-r border-[#FA8603] w-[100%] h-[100%] text-center justify-center items-center">Stats</Link>
+        <Link to="/" className="flex col-span-1 overflow-hidden border-r border-[#FA8603] w-[100%] h-[100%] text-center justify-center items-center">Home</Link>
+        <Link to="/expenses" className="flex col-span-1 overflow-hidden border-r border-[#FA8603] w-[100%] h-[100%] text-center justify-center items-center">Expenses</Link>
+        <Link to="/settings" className="flex col-span-1 overflow-hidden border-r border-[#FA8603] w-[100%] h-[100%] text-center justify-center items-center">Settings</Link>
+      </div>
       </body>
     </html>
   );
