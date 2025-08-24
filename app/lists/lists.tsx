@@ -47,11 +47,24 @@ export default function Lists() {
     setError("");
   };
 
-  const handleCantidadChange = (id: number, nuevaCantidad: number) => {
-    setInventario(inventario =>
-      inventario.map(item =>
+  const handleCantidadChange = (id: number, nuevaCantidad: string) => {
+    setInventario((inventario) =>
+      inventario.map((item) =>
         item.id === id
-          ? { ...item, cantidad: nuevaCantidad > 0 ? nuevaCantidad : 1 }
+          ? {
+              ...item,
+              cantidad: nuevaCantidad === "" ? 1 : Math.max(Number(nuevaCantidad), 1), // Convertir a número y asegurar mínimo 1
+            }
+          : item
+      )
+    );
+  };
+
+  const handleBlur = (id: number) => {
+    setInventario((inventario) =>
+      inventario.map((item) =>
+        item.id === id
+          ? { ...item, cantidad: item.cantidad || 1 } // Si está vacío, asignar 1
           : item
       )
     );
@@ -108,10 +121,9 @@ export default function Lists() {
                     <input
                       type="number"
                       min={1}
-                      value={item.cantidad}
-                      onChange={e =>
-                        handleCantidadChange(item.id, Number(e.target.value))
-                      }
+                      value={item.cantidad} // Siempre será un número
+                      onChange={(e) => handleCantidadChange(item.id, e.target.value)}
+                      onBlur={() => handleBlur(item.id)} // Restaurar a 1 si el campo está vacío
                       className="w-8 text-center font-bold text-[#222] bg-transparent border-none outline-none ml-1"
                     />
                   </div>
