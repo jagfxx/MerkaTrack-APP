@@ -94,6 +94,26 @@ export function Welcome() {
               <div
                 key={item.id}
                 className="bg-[#FA8603] rounded-2xl px-6 py-4 flex items-center gap-4"
+                onDoubleClick={() => {
+                  console.log("Doble click en", item.nombre); // <-- Verifica si esto aparece en la consola
+                  setInventario(prevInventario => {
+                    const idx = prevInventario.findIndex(i => i.id === item.id);
+                    if (idx === -1) return prevInventario;
+                    const alimento = prevInventario[idx];
+                    if (alimento.cantidad > 1) {
+                      const nuevoInventario = [...prevInventario];
+                      nuevoInventario[idx] = { ...alimento, cantidad: alimento.cantidad - 1 };
+                      return nuevoInventario;
+                    } else if (alimento.cantidad === 1) {
+                      const nuevoInventario = [...prevInventario];
+                      nuevoInventario[idx] = { ...alimento, cantidad: 0 };
+                      return nuevoInventario;
+                    } else if (alimento.cantidad === 0) {
+                      return prevInventario.filter(i => i.id !== item.id);
+                    }
+                    return prevInventario;
+                  });
+                }}
               >
                 <span className="text-3xl">{item.icon}</span>
                 <div>
