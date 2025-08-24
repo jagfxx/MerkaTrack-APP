@@ -93,12 +93,12 @@ export function Welcome() {
             {inventarioFiltrado.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl px-6 py-4 flex items-center gap-4 border border-[#FA8603]"
+                className="bg-[#FA8603] rounded-2xl px-6 py-4 flex items-center gap-4"
               >
-                <span className="text-3xl text-[#FA8603]">{item.icon}</span>
+                <span className="text-3xl">{item.icon}</span>
                 <div>
-                  <div className="text-[#FA8603] text-md">{item.nombre}</div>
-                  <div className="font-bold text-[#FA8603] text-xl">x{item.cantidad}</div>
+                  <div className="text-white text-md">{item.nombre}</div>
+                  <div className="font-bold text-white text-xl">x{item.cantidad}</div>
                 </div>
               </div>
             ))}
@@ -108,14 +108,15 @@ export function Welcome() {
 
       {modalOpen && (
         <div
-          className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-30 flex items-center justify-center z-50"
+          className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-10 flex items-center justify-center z-50"
         >
-          <div className="bg-white rounded-2xl p-8 min-w-[320px] shadow-xl">
-            <h3 className="text-lg font-bold mb-4 text-[#FA8603]">Agregar alimento</h3>
-            <div className="mb-4">
-              <label className="block mb-1 font-semibold">Selecciona alimento:</label>
+          <div className="bg-white rounded-[24px] p-8 w-[340px] h-[340px] shadow-xl flex flex-col justify-center items-center">
+            {/* Título centrado y tamaño ajustado */}
+            <h3 className="text-xl font-bold mb-6 text-[#FA8603] text-center">Agregar alimento</h3>
+            <div className="mb-4 w-full">
+              <label className="block mb-1 font-semibold text-[#FA8603]">Selecciona alimento:</label>
               <select
-                className="w-full p-2 rounded-lg border"
+                className="w-full p-2 rounded-lg border border-[#FA8603] text-[#FA8603] font-semibold focus:outline-none focus:ring-2 focus:ring-[#FA8603]"
                 value={selectedAlimento?.id || ""}
                 onChange={e => {
                   const found = alimentosData.find(
@@ -133,12 +134,12 @@ export function Welcome() {
                 ))}
               </select>
             </div>
-            <div className="mb-4">
-              <label className="block mb-1 font-semibold">Cantidad:</label>
+            <div className="mb-4 w-full">
+              <label className="block mb-1 font-semibold text-[#FA8603]">Cantidad:</label>
               <input
                 type="number"
                 min={1}
-                className="w-full p-2 rounded-lg border"
+                className="w-full p-2 rounded-lg border border-[#FA8603] text-[#FA8603] font-semibold focus:outline-none focus:ring-2 focus:ring-[#FA8603]"
                 value={cantidad}
                 onChange={e => {
                   setCantidad(e.target.value);
@@ -149,7 +150,7 @@ export function Welcome() {
             {error && (
               <div className="text-red-600 font-semibold mb-4 text-center">{error}</div>
             )}
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-2">
               <button
                 className="bg-white rounded-full px-6 py-2 font-bold text-[#FA8603] border border-[#FA8603]"
                 onClick={handleAgregar}
