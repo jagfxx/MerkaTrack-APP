@@ -53,7 +53,7 @@ export default function Lists() {
         item.id === id
           ? {
               ...item,
-              cantidad: nuevaCantidad === "" ? 1 : Math.max(Number(nuevaCantidad), 1), // Convertir a número y asegurar mínimo 1
+              cantidad: nuevaCantidad === "" ? 0 : Number(nuevaCantidad), // Permitir vacío temporalmente
             }
           : item
       )
@@ -64,7 +64,7 @@ export default function Lists() {
     setInventario((inventario) =>
       inventario.map((item) =>
         item.id === id
-          ? { ...item, cantidad: item.cantidad || 1 } // Si está vacío, asignar 1
+          ? { ...item, cantidad: item.cantidad === 0 ? 1 : item.cantidad } // Validar al perder el foco y asignar mínimo 1
           : item
       )
     );
@@ -121,9 +121,9 @@ export default function Lists() {
                     <input
                       type="number"
                       min={1}
-                      value={item.cantidad} // Siempre será un número
+                      value={item.cantidad === 0 ? "" : item.cantidad} // Mostrar vacío si es 0
                       onChange={(e) => handleCantidadChange(item.id, e.target.value)}
-                      onBlur={() => handleBlur(item.id)} // Restaurar a 1 si el campo está vacío
+                      onBlur={() => handleBlur(item.id)} // Validar al perder el foco
                       className="w-8 text-center font-bold text-[#222] bg-transparent border-none outline-none ml-1"
                     />
                   </div>
