@@ -16,6 +16,7 @@ export function Welcome() {
   const [inventario, setInventario] = useState<InventarioItem[]>([]);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [animatingItem, setAnimatingItem] = useState<number | null>(null); // Estado para la animación
 
   // Filtrar inventario según búsqueda
   const inventarioFiltrado = inventario.filter(item =>
@@ -50,6 +51,33 @@ export function Welcome() {
     setError("");
   };
 
+  const handleDoubleClick = (itemId: number) => {
+    setAnimatingItem(itemId); // Activar animación
+    setTimeout(() => setAnimatingItem(null), 500); // Desactivar animación después de 500ms
+
+    setInventario(prevInventario => {
+      const idx = prevInventario.findIndex(i => i.id === itemId);
+      if (idx === -1) return prevInventario;
+
+      const alimento = prevInventario[idx];
+      if (alimento.cantidad > 1) {
+        // Reducir cantidad si es mayor a 1
+        const nuevoInventario = [...prevInventario];
+        nuevoInventario[idx] = { ...alimento, cantidad: alimento.cantidad - 1 };
+        return nuevoInventario;
+      } else if (alimento.cantidad === 1) {
+        // Si la cantidad es 1, reducir a 0
+        const nuevoInventario = [...prevInventario];
+        nuevoInventario[idx] = { ...alimento, cantidad: 0 };
+        return nuevoInventario;
+      } else if (alimento.cantidad === 0) {
+        // Si la cantidad ya es 0, eliminar del inventario
+        return prevInventario.filter(i => i.id !== itemId);
+      }
+      return prevInventario;
+    });
+  };
+
   return (
     <div className="flex flex-col bg-white w-full h-full">
       <h1 className="text-2xl font-bold text-center p-4 text-[#FA8603]">Inventario</h1>
@@ -78,42 +106,24 @@ export function Welcome() {
 
         {/* Recuadro fondo blanco */}
         <div className="bg-white rounded-xl p-4 shadow w-full max-w-xs mx-auto">
-  
           {inventarioFiltrado.length === 0 && (
             <p className="text-gray-500">No hay alimentos agregados.</p>
           )}
           {/* Contenedor desplazable para los alimentos */}
           <div
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 inventario-container"
             style={{
               maxHeight: "320px",
-              overflowY: "auto"
+              overflowY: animatingItem ? "hidden" : "auto", // Cambiar a "hidden" durante la animación
             }}
           >
             {inventarioFiltrado.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#FA8603] rounded-2xl px-6 py-4 flex items-center gap-4"
-                onDoubleClick={() => {
-                  console.log("Doble click en", item.nombre); // <-- Verifica si esto aparece en la consola
-                  setInventario(prevInventario => {
-                    const idx = prevInventario.findIndex(i => i.id === item.id);
-                    if (idx === -1) return prevInventario;
-                    const alimento = prevInventario[idx];
-                    if (alimento.cantidad > 1) {
-                      const nuevoInventario = [...prevInventario];
-                      nuevoInventario[idx] = { ...alimento, cantidad: alimento.cantidad - 1 };
-                      return nuevoInventario;
-                    } else if (alimento.cantidad === 1) {
-                      const nuevoInventario = [...prevInventario];
-                      nuevoInventario[idx] = { ...alimento, cantidad: 0 };
-                      return nuevoInventario;
-                    } else if (alimento.cantidad === 0) {
-                      return prevInventario.filter(i => i.id !== item.id);
-                    }
-                    return prevInventario;
-                  });
-                }}
+                className={`bg-[#FA8603] rounded-2xl px-6 py-4 flex items-center gap-4 ${
+                  animatingItem === item.id ? "animate-scale" : ""
+                }`}
+                onDoubleClick={() => handleDoubleClick(item.id)}
               >
                 <span className="text-3xl">{item.icon}</span>
                 <div>
