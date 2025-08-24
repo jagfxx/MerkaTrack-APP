@@ -15,6 +15,12 @@ export function Welcome() {
   const [cantidad, setCantidad] = useState("");
   const [inventario, setInventario] = useState<InventarioItem[]>([]);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+
+  // Filtrar inventario según búsqueda
+  const inventarioFiltrado = inventario.filter(item =>
+    item.nombre.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleAgregar = () => {
     if (!selectedAlimento) {
@@ -48,6 +54,18 @@ export function Welcome() {
     <div className="flex flex-col bg-white w-full h-full">
       <h1 className="text-2xl font-bold text-center p-4 text-[#FA8603]">Inventario</h1>
       <div className="flex flex-col justify-start items-center bg-[#FA8603] flex-1 py-8">
+        {/* Buscador */}
+        <div className="flex items-center bg-white rounded-full px-4 py-2 mb-4 w-full max-w-xs">
+          <span className="text-xl text-gray-400 mr-2">🔍</span>
+          <input
+            type="text"
+            placeholder="Search"
+            className="bg-transparent outline-none flex-1 text-black"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+
         <button
           className="bg-white rounded-full px-8 py-3 font-bold text-lg text-[#FA8603] shadow-md mb-8"
           onClick={() => {
@@ -58,32 +76,33 @@ export function Welcome() {
           AGREGAR +
         </button>
 
-        {/* Eliminado el fondo blanco */}
-        <h2 className="text-xl font-bold mb-4 text-[#FA8603]">Inventario</h2>
-        {inventario.length === 0 && (
-          <p className="text-gray-500">No hay alimentos agregados.</p>
-        )}
-        {/* Contenedor desplazable para los alimentos */}
-        <div
-          className="flex flex-col gap-4 w-full max-w-xs mx-auto"
-          style={{
-            margin: "0 16px",
-            maxHeight: "320px", // Ajusta la altura según tu diseño
-            overflowY: "auto"
-          }}
-        >
-          {inventario.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-2xl px-6 py-4 flex items-center gap-4 border border-[#FA8603]"
-            >
-              <span className="text-3xl text-[#FA8603]">{item.icon}</span>
-              <div>
-                <div className="text-[#FA8603] text-md">{item.nombre}</div>
-                <div className="font-bold text-[#FA8603] text-xl">x{item.cantidad}</div>
+        {/* Recuadro fondo blanco */}
+        <div className="bg-white rounded-xl p-4 shadow w-full max-w-xs mx-auto">
+  
+          {inventarioFiltrado.length === 0 && (
+            <p className="text-gray-500">No hay alimentos agregados.</p>
+          )}
+          {/* Contenedor desplazable para los alimentos */}
+          <div
+            className="flex flex-col gap-4"
+            style={{
+              maxHeight: "320px",
+              overflowY: "auto"
+            }}
+          >
+            {inventarioFiltrado.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl px-6 py-4 flex items-center gap-4 border border-[#FA8603]"
+              >
+                <span className="text-3xl text-[#FA8603]">{item.icon}</span>
+                <div>
+                  <div className="text-[#FA8603] text-md">{item.nombre}</div>
+                  <div className="font-bold text-[#FA8603] text-xl">x{item.cantidad}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
