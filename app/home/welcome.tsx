@@ -17,6 +17,7 @@ export function Welcome() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [animatingItem, setAnimatingItem] = useState<number | null>(null); // Estado para la animación
+  const [removingItem, setRemovingItem] = useState<number | null>(null); // Estado para la eliminación
 
   // Filtrar inventario según búsqueda
   const inventarioFiltrado = inventario.filter(item =>
@@ -52,30 +53,40 @@ export function Welcome() {
   };
 
   const handleDoubleClick = (itemId: number) => {
-    setAnimatingItem(itemId); // Activar animación
-    setTimeout(() => setAnimatingItem(null), 500); // Desactivar animación después de 500ms
+    const item = inventario.find(i => i.id === itemId);
+    if (!item) return;
 
-    setInventario(prevInventario => {
-      const idx = prevInventario.findIndex(i => i.id === itemId);
-      if (idx === -1) return prevInventario;
+    if (item.cantidad === 0) {
+      // Si la cantidad es 0, activar animación de eliminación
+      setRemovingItem(itemId);
+      setTimeout(() => {
+        setInventario(prevInventario => prevInventario.filter(i => i.id !== itemId));
+        setRemovingItem(null); // Limpiar el estado después de la eliminación
+      }, 400); // Duración de la animación
+    } else {
+      // Si la cantidad es mayor a 0, reducirla
+      setAnimatingItem(itemId); // Activar animación
+      setTimeout(() => setAnimatingItem(null), 500); // Desactivar animación después de 500ms
 
-      const alimento = prevInventario[idx];
-      if (alimento.cantidad > 1) {
-        // Reducir cantidad si es mayor a 1
-        const nuevoInventario = [...prevInventario];
-        nuevoInventario[idx] = { ...alimento, cantidad: alimento.cantidad - 1 };
-        return nuevoInventario;
-      } else if (alimento.cantidad === 1) {
-        // Si la cantidad es 1, reducir a 0
-        const nuevoInventario = [...prevInventario];
-        nuevoInventario[idx] = { ...alimento, cantidad: 0 };
-        return nuevoInventario;
-      } else if (alimento.cantidad === 0) {
-        // Si la cantidad ya es 0, eliminar del inventario
-        return prevInventario.filter(i => i.id !== itemId);
-      }
-      return prevInventario;
-    });
+      setInventario(prevInventario => {
+        const idx = prevInventario.findIndex(i => i.id === itemId);
+        if (idx === -1) return prevInventario;
+
+        const alimento = prevInventario[idx];
+        if (alimento.cantidad > 1) {
+          // Reducir cantidad si es mayor a 1
+          const nuevoInventario = [...prevInventario];
+          nuevoInventario[idx] = { ...alimento, cantidad: alimento.cantidad - 1 };
+          return nuevoInventario;
+        } else if (alimento.cantidad === 1) {
+          // Si la cantidad es 1, reducir a 0
+          const nuevoInventario = [...prevInventario];
+          nuevoInventario[idx] = { ...alimento, cantidad: 0 };
+          return nuevoInventario;
+        }
+        return prevInventario;
+      });
+    }
   };
 
   return (
@@ -114,7 +125,7 @@ export function Welcome() {
             className="flex flex-col gap-4 inventario-container"
             style={{
               maxHeight: "320px",
-              overflowY: animatingItem ? "hidden" : "auto", // Cambiar a "hidden" durante la animación
+              overflowY: "auto",
             }}
           >
             {inventarioFiltrado.map((item) => (
@@ -122,7 +133,7 @@ export function Welcome() {
                 key={item.id}
                 className={`bg-[#FA8603] rounded-2xl px-6 py-4 flex items-center gap-4 ${
                   animatingItem === item.id ? "animate-scale" : ""
-                }`}
+                } ${removingItem === item.id ? "animate-remove" : ""}`}
                 onDoubleClick={() => handleDoubleClick(item.id)}
               >
                 <span className="text-3xl">{item.icon}</span>
