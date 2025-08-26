@@ -1,6 +1,7 @@
 import { ListaProvider } from "./context/ListaContext";
 import React from "react";
 import { InventarioProvider } from "./context/InventarioContext";
+import { GastosProvider } from "./context/GastosContext";
 import {
   isRouteErrorResponse,
   Links,
@@ -56,7 +57,9 @@ export default function App() {
     <React.StrictMode>
       <InventarioProvider>
         <ListaProvider>
-          <Outlet />
+          <GastosProvider>
+            <Outlet />
+          </GastosProvider>
         </ListaProvider>
       </InventarioProvider>
     </React.StrictMode>
