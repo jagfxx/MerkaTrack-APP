@@ -10,3 +10,47 @@ body {
   width: 100%;
 }
 
+/* Animación de escala con desaparición breve */
+.animate-scale {
+  animation: scaleFade 0.4s ease-out;
+  will-change: transform, opacity; /* Optimiza la animación */
+}
+
+@keyframes scaleFade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05); /* Escala más sutil */
+    opacity: 0.5; /* Breve desaparición */
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animación de eliminación */
+.animate-remove {
+  animation: fadeOut 0.4s ease-out;
+}
+
+@keyframes fadeOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* Contenedor del inventario */
+.inventario-container {
+  overflow: hidden; /* Evita scrollbars durante la animación */
+  padding: 10px; /* Espaciado interno para evitar desbordamiento */
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+}
+

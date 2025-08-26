@@ -1,1 +1,14 @@
-[  { "id": 1, "nombre": "Carne", "icon": "🥩" },  { "id": 2, "nombre": "Pescado", "icon": "🐟" },  { "id": 3, "nombre": "Pollo", "icon": "🍗" },  { "id": 4, "nombre": "Leche", "icon": "🥛" },  { "id": 5, "nombre": "Queso", "icon": "🧀" },  { "id": 6, "nombre": "Pan", "icon": "🍞" },  { "id": 7, "nombre": "Arroz", "icon": "🍚" },  { "id": 8, "nombre": "Huevos", "icon": "🥚" },  { "id": 9, "nombre": "Manzana", "icon": "🍎" },  { "id": 10, "nombre": "Plátano", "icon": "🍌" },  { "id": 11, "nombre": "Tomate", "icon": "🍅" },  { "id": 12, "nombre": "Papa", "icon": "🥔" }]
+[
+  { "id": 1, "nombre": "Carne", "icon": "🥩" },
+  { "id": 2, "nombre": "Pescado", "icon": "🐟" },
+  { "id": 3, "nombre": "Pollo", "icon": "🍗" },
+  { "id": 4, "nombre": "Leche", "icon": "🥛" },
+  { "id": 5, "nombre": "Queso", "icon": "🧀" },
+  { "id": 6, "nombre": "Pan", "icon": "🍞" },
+  { "id": 7, "nombre": "Arroz", "icon": "🍚" },
+  { "id": 8, "nombre": "Huevos", "icon": "🥚" },
+  { "id": 9, "nombre": "Manzana", "icon": "🍎" },
+  { "id": 10, "nombre": "Plátano", "icon": "🍌" },
+  { "id": 11, "nombre": "Tomate", "icon": "🍅" },
+  { "id": 12, "nombre": "Papa", "icon": "🥔" }
+]
