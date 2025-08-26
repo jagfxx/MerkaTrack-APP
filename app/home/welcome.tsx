@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useInventario } from "../context/InventarioContext";
 import alimentosData from "../components/alimentos.json";
 
 type Alimento = {
@@ -13,11 +14,27 @@ export function Welcome() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAlimento, setSelectedAlimento] = useState<Alimento | null>(null);
   const [cantidad, setCantidad] = useState("");
-  const [inventario, setInventario] = useState<InventarioItem[]>([]);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [animatingItem, setAnimatingItem] = useState<number | null>(null); // Estado para la animación
   const [removingItem, setRemovingItem] = useState<number | null>(null); // Estado para la eliminación
+
+  // Usar contexto global para inventario
+  const { inventario, setInventario, agregarAlimento } = useInventario();
+  // Cargar inventario desde localStorage solo en cliente
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const data = localStorage.getItem("inventario");
+      if (data) setInventario(JSON.parse(data));
+    }
+  }, []);
+
+  // Guardar inventario en localStorage cada vez que cambie (solo en cliente)
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("inventario", JSON.stringify(inventario));
+    }
+  }, [inventario]);
 
   // Filtrar inventario según búsqueda
   const inventarioFiltrado = inventario.filter(item =>
@@ -33,19 +50,8 @@ export function Welcome() {
       setError("Debe ingresar la cantidad.");
       return;
     }
-    const idx = inventario.findIndex(item => item.id === selectedAlimento.id);
-    if (idx !== -1) {
-      // Si ya existe, suma la cantidad
-      const nuevoInventario = [...inventario];
-      nuevoInventario[idx].cantidad += Number(cantidad);
-      setInventario(nuevoInventario);
-    } else {
-      // Si no existe, agrega nuevo
-      setInventario([
-        ...inventario,
-        { ...selectedAlimento, cantidad: Number(cantidad) }
-      ]);
-    }
+    // Usar función del contexto para agregar y registrar en historial
+    agregarAlimento({ ...selectedAlimento, cantidad: Number(cantidad) });
     setModalOpen(false);
     setSelectedAlimento(null);
     setCantidad("");

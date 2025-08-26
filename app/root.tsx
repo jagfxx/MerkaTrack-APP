@@ -1,3 +1,6 @@
+import { ListaProvider } from "./context/ListaContext";
+import React from "react";
+import { InventarioProvider } from "./context/InventarioContext";
 import {
   isRouteErrorResponse,
   Links,
@@ -49,7 +52,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <React.StrictMode>
+      <InventarioProvider>
+        <ListaProvider>
+          <Outlet />
+        </ListaProvider>
+      </InventarioProvider>
+    </React.StrictMode>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
