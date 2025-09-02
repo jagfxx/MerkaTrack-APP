@@ -109,15 +109,7 @@ export function Welcome() {
           />
         </div>
 
-        <button
-          className="bg-white rounded-full px-8 py-3 font-bold text-lg text-[#FA8603] shadow-md mb-8"
-          onClick={() => {
-            setModalOpen(true);
-            setError("");
-          }}
-        >
-          AGREGAR +
-        </button>
+       
 
         {/* Recuadro fondo blanco */}
         <div className="bg-white rounded-xl p-4 shadow w-full max-w-xs mx-auto">
