@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGastos } from '../context/GastosContext';
+import { useSettings } from '../context/SettingsContext';
 import alimentosData from '../components/alimentos.json';
 
 // Definición del tipo para los gastos
@@ -19,8 +20,9 @@ const CATEGORIAS = alimentosData.map(alimento => ({
 }));
 
 export default function Expenses() {
-  // Usar el contexto de gastos
+  // Usar los contextos
   const { gastos, agregarGasto: agregarGastoContext, totalGastos } = useGastos();
+  const { convertToCurrentCurrency, formatCurrency } = useSettings();
   
   // Estados para el formulario de nuevo gasto
   const [nuevoGasto, setNuevoGasto] = useState({
@@ -51,9 +53,12 @@ export default function Expenses() {
       return;
     }
     
+    // Guardamos el monto directamente en COP (asumimos que la entrada es en COP)
+    const montoEnCOP = parseFloat(nuevoGasto.monto);
+    
     agregarGastoContext({
       descripcion: nuevoGasto.descripcion,
-      monto: parseFloat(nuevoGasto.monto),
+      monto: montoEnCOP, // Guardamos en COP como moneda base
       categoria: nuevoGasto.categoria,
       categoriaIcono: CATEGORIAS.find(cat => cat.nombre === nuevoGasto.categoria)?.icono || '💵',
       fecha: new Date().toISOString()
@@ -102,8 +107,8 @@ export default function Expenses() {
       <div className="bg-gray-50 p-4">
         <div className="bg-white rounded-xl shadow p-6 max-w-2xl mx-auto w-full">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Resumen de Gastos</h2>
-          <div className="text-3xl font-bold text-[#FA8603]">
-            ${totalGastos.toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+          <div className="text-2xl font-bold">
+            {formatCurrency(convertToCurrentCurrency(totalGastos, 'COP'))}
           </div>
           <p className="text-gray-500 text-sm mt-1">Total gastado</p>
         </div>
@@ -131,7 +136,10 @@ export default function Expenses() {
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{gasto.descripcion}</h3>
+                    <p className="text-lg font-medium">
+                      {formatCurrency(convertToCurrentCurrency(gasto.monto, 'COP'))}
+                    </p>
+                    <h3>{gasto.descripcion}</h3>
                     <p className="text-sm text-gray-500">
                       {gasto.categoria} • {formatearFecha(gasto.fecha)}
                     </p>
@@ -139,7 +147,7 @@ export default function Expenses() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="font-bold text-gray-900">
-                    ${gasto.monto.toLocaleString('es-ES')}
+                    {formatCurrency(convertToCurrentCurrency(gasto.monto, 'USD'))}
                   </span>
                   <button
                     onClick={() => eliminarGasto(gasto.id)}

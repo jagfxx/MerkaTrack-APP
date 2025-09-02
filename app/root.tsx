@@ -1,7 +1,8 @@
-import { ListaProvider } from "./context/ListaContext";
 import React from "react";
 import { InventarioProvider } from "./context/InventarioContext";
 import { GastosProvider } from "./context/GastosContext";
+import { SettingsProvider } from "./context/SettingsContext";
+import { ListasProvider } from "./context/ListasContext";
 import {
   isRouteErrorResponse,
   Links,
@@ -55,13 +56,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <React.StrictMode>
-      <InventarioProvider>
-        <ListaProvider>
-          <GastosProvider>
-            <Outlet />
-          </GastosProvider>
-        </ListaProvider>
-      </InventarioProvider>
+      <SettingsProvider>
+        <GastosProvider>
+          <InventarioProvider>
+            <ListasProvider>
+              <Outlet />
+            </ListasProvider>
+          </InventarioProvider>
+        </GastosProvider>
+      </SettingsProvider>
     </React.StrictMode>
   );
 }

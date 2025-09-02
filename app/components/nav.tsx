@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router";
-import list from "./icons-02.svg";
-import stats from "./icons-03.svg";
-import home from "./icons-04.svg";
-import expenses from "./icons-05.svg";
-import settings from "./icons-06.svg";
+import { FaList, FaChartBar, FaHome, FaMoneyBillWave, FaCog } from "react-icons/fa";
 
 export function BottomNav() {
   const location = useLocation();
@@ -21,8 +17,14 @@ export function BottomNav() {
     setActiveIndex(index >= 0 ? index : 0);
   }, [location.pathname]);
 
-  const icons = [list, stats, home, expenses, settings];
-  const labels = ["List", "Stats", "Home", "Expenses", "Settings"];
+  const icons = [
+    <FaList className="text-2xl" />,
+    <FaChartBar className="text-2xl" />,
+    <FaHome className="text-2xl" />,
+    <FaMoneyBillWave className="text-2xl" />,
+    <FaCog className="text-2xl" />
+  ];
+  const labels = ["Listas", "Estadísticas", "Inicio", "Gastos", "Ajustes"];
 
   return (
     <div className="relative grid grid-cols-5 w-full bg-white/90 border-t border-[#FA8603]">
@@ -39,8 +41,10 @@ export function BottomNav() {
           to={path}
           className="flex flex-col justify-center items-center z-10 p-1"
         >
-          <img className="w-[35px]" src={icons[index]} alt={labels[index]} />
-          <span className="text-[#FA8603]  ">{labels[index]}</span>
+          <div className="text-[#FA8603]">
+            {icons[index]}
+          </div>
+          <span className="text-[#FA8603] text-xs">{labels[index]}</span>
         </NavLink>
       ))}
     </div>

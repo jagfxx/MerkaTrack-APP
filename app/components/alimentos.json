@@ -1,14 +1,14 @@
 [
-  { "id": 1, "nombre": "Carne", "icon": "🥩" },
-  { "id": 2, "nombre": "Pescado", "icon": "🐟" },
-  { "id": 3, "nombre": "Pollo", "icon": "🍗" },
-  { "id": 4, "nombre": "Leche", "icon": "🥛" },
-  { "id": 5, "nombre": "Queso", "icon": "🧀" },
-  { "id": 6, "nombre": "Pan", "icon": "🍞" },
-  { "id": 7, "nombre": "Arroz", "icon": "🍚" },
-  { "id": 8, "nombre": "Huevos", "icon": "🥚" },
-  { "id": 9, "nombre": "Manzana", "icon": "🍎" },
-  { "id": 10, "nombre": "Plátano", "icon": "🍌" },
-  { "id": 11, "nombre": "Tomate", "icon": "🍅" },
-  { "id": 12, "nombre": "Papa", "icon": "🥔" }
+  { "id": 1, "nombre": "Carne de res (1kg)", "icon": "🥩", "precio": 32000 },
+  { "id": 2, "nombre": "Pescado (1kg)", "icon": "🐟", "precio": 25000 },
+  { "id": 3, "nombre": "Pollo (1kg)", "icon": "🍗", "precio": 15000 },
+  { "id": 4, "nombre": "Leche (1L)", "icon": "🥛", "precio": 3800 },
+  { "id": 5, "nombre": "Queso (500g)", "icon": "🧀", "precio": 9800 },
+  { "id": 6, "nombre": "Pan (500g)", "icon": "🍞", "precio": 4500 },
+  { "id": 7, "nombre": "Arroz (1kg)", "icon": "🍚", "precio": 4200 },
+  { "id": 8, "nombre": "Huevos (30 unidades)", "icon": "🥚", "precio": 18000 },
+  { "id": 9, "nombre": "Manzana (1kg)", "icon": "🍎", "precio": 9800 },
+  { "id": 10, "nombre": "Plátano (1kg)", "icon": "🍌", "precio": 3200 },
+  { "id": 11, "nombre": "Tomate (1kg)", "icon": "🍅", "precio": 4200 },
+  { "id": 12, "nombre": "Papa (1kg)", "icon": "🥔", "precio": 2800 }
 ]

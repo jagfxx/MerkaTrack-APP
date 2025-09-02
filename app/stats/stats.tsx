@@ -1,5 +1,5 @@
 import { useInventario } from "../context/InventarioContext";
-import { useLista } from "../context/ListaContext";
+import { useListas } from "../context/ListasContext";
 import React, { useEffect, useState } from "react";
 
 function getMostFrequent(arr: any[], key: string) {
@@ -21,9 +21,12 @@ function getMostFrequent(arr: any[], key: string) {
 
 export default function Stats() {
   const { inventario } = useInventario();
-  const { lista } = useLista();
+  const { listas } = useListas();
   const [historialInventario, setHistorialInventario] = useState<any[]>([]);
   const [historialLista, setHistorialLista] = useState<any[]>([]);
+  
+  // Get all items from all lists
+  const allListItems = listas.flatMap(lista => lista.items);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -34,10 +37,10 @@ export default function Stats() {
     }
   }, []);
 
-  const totalInventario = inventario.reduce((acc, item) => acc + item.cantidad, 0);
-  const totalLista = lista.reduce((acc, item) => acc + item.cantidad, 0);
+  const totalInventario = inventario.reduce((acc: number, item: any) => acc + item.cantidad, 0);
+  const totalLista = allListItems.reduce((acc: number, item: any) => acc + item.cantidad, 0);
   const masInventario = getMostFrequent(inventario, "nombre");
-  const masLista = getMostFrequent(lista, "nombre");
+  const masLista = getMostFrequent(allListItems, "nombre");
 
   return (
     <div className="flex flex-col bg-white w-full h-full">

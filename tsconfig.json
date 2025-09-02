@@ -3,11 +3,17 @@
     "**/*",
     "**/.server/**/*",
     "**/.client/**/*",
-    ".react-router/types/**/*"
+    ".react-router/types/**/*",
+    "app/types/**/*.d.ts",
+    "app/types/**/*.ts"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["node", "vite/client"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./app/types"
+    ],
+    "types": ["node"],
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "bundler",
