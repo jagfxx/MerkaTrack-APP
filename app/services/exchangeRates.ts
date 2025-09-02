@@ -11,11 +11,13 @@ type Currency = 'COP' | 'USD' | 'EUR' | 'GBP';
 export const convertCurrency = (amount: number, from: Currency, to: Currency): number => {
   if (from === to) return amount;
   
-  // Convertir a USD primero (moneda base)
-  const amountInUSD = amount / (EXCHANGE_RATES[from] || 1);
+  // Convertir a COP primero (moneda base)
+  const amountInCOP = from === 'COP' ? amount : amount / EXCHANGE_RATES[from];
   
   // Convertir a la moneda objetivo
-  return parseFloat((amountInUSD * (EXCHANGE_RATES[to] || 1)).toFixed(2));
+  const result = to === 'COP' ? amountInCOP : amountInCOP * EXCHANGE_RATES[to];
+  
+  return parseFloat(result.toFixed(2));
 };
 
 export const formatCurrency = (amount: number, currency: Currency): string => {

@@ -24,7 +24,7 @@ interface GastoComida {
 
 export default function Expenses() {
   // Usar los contextos
-  const { formatCurrency } = useSettings();
+  const { formatCurrency, convertToCurrentCurrency, currency } = useSettings();
   const { inventario } = useInventario();
   const { listas } = useListas();
   
@@ -60,7 +60,7 @@ export default function Expenses() {
         setHistorialMovimientos(movimientosProcesados);
       }
     }
-  }, [inventario]);
+  }, [inventario, currency]); // Añadir currency como dependencia para recalcular cuando cambie
   
   // Filtrar movimientos por búsqueda
   const movimientosFiltrados = historialMovimientos.filter(movimiento =>
@@ -69,7 +69,11 @@ export default function Expenses() {
   
   // Calcular el total gastado en comidas
   const totalGastado = historialMovimientos.reduce(
-    (total, mov) => total + (mov.monto * mov.cantidad), 
+    (total, mov) => {
+      // Convertir cada monto a la moneda actual antes de sumar
+      const montoEnMonedaActual = convertToCurrentCurrency(mov.monto, 'COP');
+      return total + (montoEnMonedaActual * mov.cantidad);
+    }, 
     0
   );
   
@@ -155,7 +159,9 @@ export default function Expenses() {
                   <div className="text-xs text-gray-500">{formatearFecha(movimiento.fecha)}</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-medium">{formatCurrency(movimiento.monto * movimiento.cantidad)}</div>
+                  <div className="font-medium">
+                    {formatCurrency(convertToCurrentCurrency(movimiento.monto, 'COP') * movimiento.cantidad)}
+                  </div>
                   <div className="text-xs text-gray-500">{movimiento.cantidad} {movimiento.cantidad === 1 ? 'unidad' : 'unidades'}</div>
                 </div>
               </div>

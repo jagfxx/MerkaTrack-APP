@@ -124,7 +124,7 @@ export const ListasProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           if (item.id === itemId) {
             const nuevoEstado = !item.agregado;
             
-            // Si el ítem está siendo marcado como completado (no estaba agregado)
+            // Solo procesar si el estado está cambiando a completado
             if (nuevoEstado) {
               // Buscar el alimento en la lista de alimentos
               const alimento = alimentos.find((a: any) => a.id === item.productoId);
