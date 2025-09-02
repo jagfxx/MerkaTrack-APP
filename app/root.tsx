@@ -39,15 +39,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="flex flex-col justify-center items-center   h-[96vh] overflow-hidden">
-      <nav className="flex justify-center align-center bg-white border-b border-[#FA8603] p-4 h-[10%] w-[100%] shadow-sm">
-        <img className="w-[200px]" src={logoFull} alt="MerkaTrack" />
-      </nav>
-        {children}
-        <BottomNav />
+      <body className="flex flex-col h-screen w-full overflow-hidden bg-gray-50">
+        {/* Fixed Header */}
+        <header className="flex-shrink-0 bg-white border-b border-[#FA8603] shadow-sm">
+          <div className="flex justify-center items-center p-4">
+            <img className="w-[180px] md:w-[200px]" src={logoFull} alt="MerkaTrack" />
+          </div>
+        </header>
+
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto w-full">
+          <div className="max-w-4xl mx-auto w-full p-4">
+            {children}
+          </div>
+        </main>
+
+        {/* Fixed Bottom Navigation */}
+        <div className="flex-shrink-0 bg-white border-t border-[#FA8603] w-full">
+          <BottomNav />
+        </div>
+
         <ScrollRestoration />
         <Scripts />
-        
       </body>
     </html>
   );

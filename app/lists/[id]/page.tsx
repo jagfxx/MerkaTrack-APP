@@ -79,28 +79,31 @@ export default function ListaDetallePage() {
   const porcentajeCompletado = totalItems > 0 ? Math.round((itemsAgregados / totalItems) * 100) : 0;
   
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50">
       {/* Encabezado */}
-      <div className="bg-white p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
+      <div className="bg-white p-4 shadow-sm">
+        <div className="flex items-center space-x-4">
           <button 
             onClick={handleBack}
-            className="text-gray-600"
+            className="w-12 h-12 flex items-center justify-center -ml-2 active:bg-gray-100 rounded-full transition-colors"
+            aria-label="Volver"
           >
-            ←
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
-          <h1 className="text-xl font-bold text-[#FA8603] flex-1">{lista.nombre}</h1>
+          <h1 className="text-xl font-bold text-[#FA8603] flex-1 line-clamp-1">{lista.nombre}</h1>
         </div>
         
         {/* Barra de progreso */}
-        <div className="mt-3">
-          <div className="flex justify-between text-sm mb-1">
+        <div className="mt-4">
+          <div className="flex justify-between text-sm mb-2">
             <span className="text-gray-600">{porcentajeCompletado}% completado</span>
             <span className="font-medium">{itemsAgregados}/{totalItems} ítems</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div 
-              className="bg-[#FA8603] h-2.5 rounded-full" 
+              className="bg-[#FA8603] h-full rounded-full transition-all duration-300 ease-in-out" 
               style={{ width: `${porcentajeCompletado}%` }}
             />
           </div>
@@ -108,85 +111,130 @@ export default function ListaDetallePage() {
       </div>
       
       {/* Contenido principal */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Botón para agregar ítems */}
-        <div className="p-4">
+      <div className="flex-1 overflow-y-auto pb-24">
+        {/* Botón flotante para agregar ítems */}
+        <div className="fixed bottom-4 right-4 z-10">
           <button
-            onClick={() => setMostrarAgregarItem(!mostrarAgregarItem)}
-            className="w-full bg-[#FA8603] text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2"
+            onClick={() => {
+              setMostrarAgregarItem(!mostrarAgregarItem);
+              if (!mostrarAgregarItem) {
+                // Scroll to top when opening the add item panel
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="w-14 h-14 bg-[#FA8603] text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transform transition-transform duration-150"
+            aria-label="Agregar ítems"
           >
-            <span>+</span>
-            <span>Agregar ítems</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
           </button>
         </div>
         
-        {/* Formulario para agregar ítems */}
-        {mostrarAgregarItem && (
-          <div className="bg-white p-4 border-b border-gray-200">
-            <div className="relative mb-3">
-              <input
-                type="text"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Buscar productos..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FA8603] focus:border-transparent"
-                autoFocus
-              />
+        {/* Panel para agregar ítems */}
+        <div className={`bg-white shadow-md transition-all duration-300 ease-in-out transform ${mostrarAgregarItem ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}>
+          <div className="p-4">
+            <div className="relative mb-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  placeholder="Buscar productos..."
+                  className="w-full p-4 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FA8603] focus:border-transparent text-base"
+                  autoFocus
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
             </div>
             
             {/* Lista de productos */}
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-[60vh] overflow-y-auto -mx-4">
               {alimentosFiltrados.map((producto: Alimento) => (
                 <div 
                   key={producto.id}
-                  className="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50"
+                  className="px-4 py-3 active:bg-gray-50 transition-colors"
+                  onClick={() => handleAgregarItem(producto.id, producto.precio)}
                 >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-xl">{producto.icon}</span>
-                    <span>{producto.nombre}</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="text-gray-600">{formatCurrency(producto.precio)}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-xl">
+                        {producto.icon}
+                      </div>
+                      <div>
+                        <div className="font-medium">{producto.nombre}</div>
+                        <div className="text-sm text-gray-500">{formatCurrency(producto.precio)}</div>
+                      </div>
+                    </div>
                     <button
-                      onClick={() => handleAgregarItem(producto.id, producto.precio)}
-                      className="text-[#FA8603] font-bold"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAgregarItem(producto.id, producto.precio);
+                      }}
+                      className="w-10 h-10 flex items-center justify-center text-[#FA8603] active:bg-orange-50 rounded-full"
+                      aria-label={`Agregar ${producto.nombre}`}
                     >
-                      Agregar
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
                     </button>
                   </div>
                 </div>
               ))}
             </div>
             
-            <div className="mt-3 flex items-center justify-between">
-              <label className="text-sm text-gray-600">Cantidad:</label>
-              <div className="flex items-center space-x-2">
+            <div className="mt-6 mb-4 flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">Cantidad:</span>
+              <div className="flex items-center space-x-3">
                 <button 
-                  onClick={() => setCantidad(prev => Math.max(1, prev - 1))}
-                  className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCantidad(prev => Math.max(1, prev - 1));
+                  }}
+                  className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
+                  aria-label="Reducir cantidad"
                 >
-                  -
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
                 </button>
-                <span className="w-8 text-center">{cantidad}</span>
+                <span className="w-10 text-center text-lg font-medium">{cantidad}</span>
                 <button 
-                  onClick={() => setCantidad(prev => prev + 1)}
-                  className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCantidad(prev => prev + 1);
+                  }}
+                  className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
+                  aria-label="Aumentar cantidad"
                 >
-                  +
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
                 </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
         
         {/* Lista de ítems */}
         <div className="p-4 space-y-3">
           {lista.items.length === 0 ? (
-            <div className="text-center py-10 text-gray-500">
-              No hay ítems en esta lista
+            <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+              <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 5V19H5V5H19ZM19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM11 16H13V11H16V9H13V4H11V9H8V11H11V16Z" fill="#FB923C"/>
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">Lista vacía</h3>
+              <p className="text-gray-500 text-sm">Presiona el botón + para agregar ítems</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {lista.items.map((item: any) => {
                 const producto = (alimentosData as Alimento[]).find((p: Alimento) => p.id === item.productoId);
                 if (!producto) return null;
@@ -194,35 +242,58 @@ export default function ListaDetallePage() {
                 return (
                   <div 
                     key={item.id}
-                    className={`bg-white rounded-xl shadow p-4 flex items-center justify-between ${item.agregado ? 'opacity-60' : ''}`}
+                    className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-200 ${
+                      item.agregado ? 'opacity-70' : 'active:scale-[0.98]'
+                    }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <button
-                        onClick={() => toggleItemAgregado(lista.id, item.id)}
-                        className={`w-6 h-6 rounded-full border-2 ${item.agregado ? 'bg-[#FA8603] border-[#FA8603]' : 'border-gray-300'}`}
-                      >
-                        {item.agregado && (
-                          <span className="text-white flex items-center justify-center">✓</span>
-                        )}
-                      </button>
-                      <div>
-                        <p className={`font-medium ${item.agregado ? 'line-through' : ''}`}>
-                          {producto.nombre}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {item.cantidad} x {formatCurrency(item.precioUnitario)} = {formatCurrency(item.cantidad * item.precioUnitario)}
-                        </p>
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-4 flex-1 min-w-0">
+                        <div className="flex-shrink-0">
+                          <button
+                            onClick={() => toggleItemAgregado(lista.id, item.id)}
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                              item.agregado 
+                                ? 'bg-[#FA8603] border-[#FA8603]' 
+                                : 'border-gray-300 active:border-[#FA8603] active:bg-orange-50'
+                            }`}
+                            aria-label={item.agregado ? 'Desmarcar como completado' : 'Marcar como completado'}
+                          >
+                            {item.agregado && (
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                        <div className="flex-1 min-w-0 ml-3">
+                          <div className="flex items-center justify-between">
+                            <h3 className={`font-medium truncate ${item.agregado ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+                              {producto.nombre}
+                            </h3>
+                            <span className="text-sm font-medium ml-2 whitespace-nowrap">
+                              {formatCurrency(item.precioUnitario * item.cantidad)}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between mt-1">
+                            <div className="text-sm text-gray-500">
+                              {formatCurrency(item.precioUnitario)} × {item.cantidad}
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                eliminarItemDeLista(lista.id, item.id);
+                              }}
+                              className="text-gray-400 hover:text-red-500 active:text-red-600 transition-colors p-1 -mr-2"
+                              aria-label="Eliminar ítem"
+                            >
+                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        eliminarItemDeLista(lista.id, item.id);
-                      }}
-                      className="text-gray-400 hover:text-red-500"
-                    >
-                      🗑️
-                    </button>
                   </div>
                 );
               })}

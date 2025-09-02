@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { useInventario } from './InventarioContext';
+import { useGastos } from './GastosContext';
 
 export interface ItemLista {
   id: string;
@@ -104,22 +105,36 @@ export const ListasProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setListas(prev => prev.filter(lista => lista.id !== id));
   };
 
+  const { agregarGasto } = useGastos();
+
   const toggleItemAgregado = useCallback((listaId: string, itemId: string) => {
     setListas(prev => prev.map(lista => {
       if (lista.id === listaId) {
         const itemsActualizados = lista.items.map(item => {
           if (item.id === itemId) {
+            const nuevoEstado = !item.agregado;
+            
             // Si el ítem está siendo marcado como completado (no estaba agregado)
-            if (!item.agregado) {
-              // Agregar al inventario cuando se marca como completado
+            if (nuevoEstado) {
+              // Agregar al inventario
               agregarAlimento({
                 id: item.productoId,
                 nombre: `Producto ${item.productoId}`, // Nombre genérico, se puede mejorar
                 icon: '🍎', // Ícono por defecto
                 cantidad: item.cantidad
               });
+
+              // Agregar a gastos
+              agregarGasto({
+                descripcion: `Compra de ${item.cantidad} unidades`,
+                monto: item.precioUnitario * item.cantidad,
+                categoria: 'Compras',
+                categoriaIcono: '🛒',
+                fecha: new Date().toISOString()
+              });
             }
-            return { ...item, agregado: !item.agregado };
+            
+            return { ...item, agregado: nuevoEstado };
           }
           return item;
         });
@@ -132,7 +147,7 @@ export const ListasProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
       return lista;
     }));
-  }, [agregarAlimento]);
+  }, [agregarAlimento, agregarGasto]);
 
   const eliminarItemDeLista = (listaId: string, itemId: string) => {
     setListas(prev => prev.map(lista => {
