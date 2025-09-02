@@ -2,6 +2,16 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import { useInventario } from './InventarioContext';
 import { useGastos } from './GastosContext';
+import alimentosData from '../components/alimentos.json';
+
+interface Alimento {
+  id: number;
+  nombre: string;
+  icon: string;
+  precio: number;
+}
+
+const alimentos: Alimento[] = alimentosData as Alimento[];
 
 export interface ItemLista {
   id: string;
@@ -116,17 +126,22 @@ export const ListasProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             
             // Si el ítem está siendo marcado como completado (no estaba agregado)
             if (nuevoEstado) {
+              // Buscar el alimento en la lista de alimentos
+              const alimento = alimentos.find((a: any) => a.id === item.productoId);
+              const nombreAlimento = alimento?.nombre || `Producto ${item.productoId}`;
+              const iconoAlimento = alimento?.icon || '🍎';
+              
               // Agregar al inventario
               agregarAlimento({
                 id: item.productoId,
-                nombre: `Producto ${item.productoId}`, // Nombre genérico, se puede mejorar
-                icon: '🍎', // Ícono por defecto
+                nombre: nombreAlimento,
+                icon: iconoAlimento,
                 cantidad: item.cantidad
               });
 
-              // Agregar a gastos
+              // Agregar a gastos con el nombre real del producto
               agregarGasto({
-                descripcion: `Compra de ${item.cantidad} unidades`,
+                descripcion: `${nombreAlimento} (${item.cantidad} ${item.cantidad === 1 ? 'unidad' : 'unidades'})`,
                 monto: item.precioUnitario * item.cantidad,
                 categoria: 'Compras',
                 categoriaIcono: '🛒',
