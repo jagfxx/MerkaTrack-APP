@@ -58,41 +58,39 @@ export function Welcome() {
     setError("");
   };
 
-  const handleDoubleClick = (itemId: number) => {
+  const handleConsumeItem = (itemId: number, amount: number) => {
     const item = inventario.find(i => i.id === itemId);
     if (!item) return;
 
-    if (item.cantidad === 0) {
-      // Si la cantidad es 0, activar animación de eliminación
-      setRemovingItem(itemId);
-      setTimeout(() => {
-        setInventario(prevInventario => prevInventario.filter(i => i.id !== itemId));
-        setRemovingItem(null); // Limpiar el estado después de la eliminación
-      }, 400); // Duración de la animación
-    } else {
-      // Si la cantidad es mayor a 0, reducirla
-      setAnimatingItem(itemId); // Activar animación
-      setTimeout(() => setAnimatingItem(null), 500); // Desactivar animación después de 500ms
+    setAnimatingItem(itemId); // Activar animación
+    setTimeout(() => setAnimatingItem(null), 200); // Desactivar animación después de 200ms
 
-      setInventario(prevInventario => {
-        const idx = prevInventario.findIndex(i => i.id === itemId);
-        if (idx === -1) return prevInventario;
+    setInventario(prevInventario => {
+      const idx = prevInventario.findIndex(i => i.id === itemId);
+      if (idx === -1) return prevInventario;
 
-        const alimento = prevInventario[idx];
-        if (alimento.cantidad > 1) {
-          // Reducir cantidad si es mayor a 1
-          const nuevoInventario = [...prevInventario];
-          nuevoInventario[idx] = { ...alimento, cantidad: alimento.cantidad - 1 };
-          return nuevoInventario;
-        } else if (alimento.cantidad === 1) {
-          // Si la cantidad es 1, reducir a 0
-          const nuevoInventario = [...prevInventario];
-          nuevoInventario[idx] = { ...alimento, cantidad: 0 };
-          return nuevoInventario;
-        }
-        return prevInventario;
-      });
-    }
+      const alimento = prevInventario[idx];
+      const newAmount = Math.max(0, alimento.cantidad - amount);
+
+      if (newAmount === 0) {
+        // Si la cantidad llega a 0, activar animación de eliminación
+        setRemovingItem(itemId);
+        setTimeout(() => {
+          setInventario(prev => prev.filter(i => i.id !== itemId));
+          setRemovingItem(null);
+        }, 400);
+        return prevInventario; // El estado se actualizará en el timeout
+      }
+
+      // Actualizar la cantidad
+      const nuevoInventario = [...prevInventario];
+      nuevoInventario[idx] = { ...alimento, cantidad: newAmount };
+      return nuevoInventario;
+    });
+  };
+
+  const handleDoubleClick = (itemId: number) => {
+    handleConsumeItem(itemId, 1);
   };
 
   return (
@@ -137,16 +135,24 @@ export function Welcome() {
             {inventarioFiltrado.map((item) => (
               <div
                 key={item.id}
-                className={`bg-[#FA8603] rounded-2xl px-6 py-4 flex items-center gap-4 ${
+                className={`bg-[#FA8603] rounded-2xl px-6 py-4 flex items-center justify-between gap-4 ${
                   animatingItem === item.id ? "animate-scale" : ""
                 } ${removingItem === item.id ? "animate-remove" : ""}`}
-                onDoubleClick={() => handleDoubleClick(item.id)}
               >
-                <span className="text-3xl">{item.icon}</span>
-                <div>
-                  <div className="text-white text-md">{item.nombre}</div>
-                  <div className="font-bold text-white text-xl">x{item.cantidad}</div>
+                <div className="flex items-center gap-4 flex-1">
+                  <span className="text-3xl">{item.icon}</span>
+                  <div>
+                    <div className="text-white text-md">{item.nombre}</div>
+                    <div className="font-bold text-white text-xl">x{item.cantidad}</div>
+                  </div>
                 </div>
+                <button
+                  onClick={() => handleConsumeItem(item.id, 1)}
+                  className="bg-white text-[#FA8603] rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg hover:bg-gray-100 transition-colors"
+                  title="Consumir 1 unidad"
+                >
+                  -
+                </button>
               </div>
             ))}
           </div>
