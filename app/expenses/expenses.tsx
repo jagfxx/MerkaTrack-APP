@@ -5,6 +5,13 @@ import { useInventario } from '../context/InventarioContext';
 import { useListas } from '../context/ListasContext';
 import alimentosData from '../components/alimentos.json';
 
+type Alimento = {
+  id: number;
+  nombre: string;
+  icon: string;
+  precio: number;
+};
+
 // Definición del tipo para los gastos de comida
 interface GastoComida {
   id: string;
@@ -34,14 +41,22 @@ export default function Expenses() {
       if (historial) {
         const movimientos = JSON.parse(historial);
         // Procesar el historial para mostrar solo los movimientos de listas a inventario
-        const movimientosProcesados = movimientos.map((mov: any) => ({
-          id: mov.id || Date.now().toString(),
-          nombre: mov.nombre,
-          monto: mov.precio || 0,
-          icono: mov.icon || '🍽️',
-          fecha: mov.fecha || new Date().toISOString(),
-          cantidad: mov.cantidad || 1
-        }));
+        const movimientosProcesados = movimientos
+          .filter((mov: any) => mov.nombre) // Filtrar solo elementos con nombre
+          .map((mov: any) => {
+            // Buscar el alimento en la lista de alimentos para obtener el precio
+            const alimento = alimentosData.find((a: any) => a.nombre === mov.nombre);
+            const precio = alimento?.precio || 0;
+            
+            return {
+              id: mov.id || Date.now().toString(),
+              nombre: mov.nombre,
+              monto: precio, // Usar el precio del alimento
+              icono: mov.icon || alimento?.icon || '🍽️',
+              fecha: mov.fecha || new Date().toISOString(),
+              cantidad: mov.cantidad || 1
+            };
+          });
         setHistorialMovimientos(movimientosProcesados);
       }
     }
