@@ -19,6 +19,7 @@ export default function ListaDetallePage() {
     obtenerLista, 
     agregarItemALista, 
     toggleItemAgregado, 
+    toggleItemConsumido,
     eliminarItemDeLista 
   } = useListas();
   
@@ -256,7 +257,7 @@ export default function ListaDetallePage() {
                   >
                     <div className="p-4 flex items-center justify-between">
                       <div className="flex items-center space-x-4 flex-1 min-w-0">
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 flex flex-col items-center space-y-1">
                           <button
                             onClick={() => toggleItemAgregado(lista.id, item.id)}
                             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
@@ -272,6 +273,22 @@ export default function ListaDetallePage() {
                               </svg>
                             )}
                           </button>
+                          {item.agregado && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleItemConsumido(lista.id, item.id);
+                              }}
+                              className={`w-5 h-5 rounded-full border flex items-center justify-center text-xs transition-colors ${
+                                item.consumido 
+                                  ? 'bg-green-100 border-green-400 text-green-600' 
+                                  : 'border-gray-300 text-gray-400 hover:bg-gray-50 active:bg-green-50 active:border-green-200'
+                              }`}
+                              aria-label={item.consumido ? 'Marcar como no consumido' : 'Marcar como consumido'}
+                            >
+                              {item.consumido ? '✓' : '−'}
+                            </button>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0 ml-3">
                           <div className="flex items-center justify-between">

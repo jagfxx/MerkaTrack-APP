@@ -75,29 +75,45 @@ export const InventarioProvider: React.FC<{ children: React.ReactNode }> = ({ ch
    * @param {InventarioItem} item - El alimento a agregar o actualizar
    */
   const agregarAlimento = (item: InventarioItem) => {
+    console.log('Agregando a inventario:', item);
+    
     // Actualiza el estado del inventario
     setInventario(prev => {
-      // Busca si el alimento ya existe en el inventario
-      const idx = prev.findIndex(i => i.id === item.id);
-      if (idx !== -1) {
-        // Si existe, actualiza la cantidad sumando la nueva cantidad
-        return prev.map((alimento, i) =>
-          i === idx
-            ? { ...alimento, cantidad: alimento.cantidad + item.cantidad }
-            : alimento
-        );
+      // Hacemos una copia profunda del estado anterior
+      const newState = [...prev];
+      // Buscamos si el alimento ya existe en el inventario
+      const existingItemIndex = newState.findIndex(i => i.id === item.id);
+      
+      if (existingItemIndex !== -1) {
+        // Si existe, actualizamos la cantidad
+        console.log('Item exists, updating quantity. Previous:', newState[existingItemIndex].cantidad, 'Adding:', item.cantidad);
+        newState[existingItemIndex] = {
+          ...newState[existingItemIndex],
+          cantidad: newState[existingItemIndex].cantidad + item.cantidad
+        };
       } else {
-        // Si no existe, agrega el nuevo alimento al inventario
-        return [...prev, item];
+        // Si no existe, lo agregamos al inventario
+        console.log('New item, adding to inventory');
+        newState.push({ ...item });
       }
+      
+      console.log('New inventory state:', newState);
+      return newState;
     });
 
     // Guarda en el historial de cambios
     if (typeof window !== "undefined") {
       const historial = localStorage.getItem("historialAlimentos");
       const arr = historial ? JSON.parse(historial) : [];
-      // Agrega el cambio al historial con marca de tiempo
-      arr.push({ ...item, fecha: new Date().toISOString() });
+      // Agregamos el cambio al historial con marca de tiempo
+      // Pero solo guardamos el item actual, no la cantidad acumulada
+      const historialItem = { 
+        ...item, 
+        fecha: new Date().toISOString(),
+        accion: 'agregado',
+        cantidadAgregada: item.cantidad // Guardamos la cantidad específica de esta operación
+      };
+      arr.push(historialItem);
       localStorage.setItem("historialAlimentos", JSON.stringify(arr));
     }
   };
