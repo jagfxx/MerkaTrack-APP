@@ -79,7 +79,7 @@ export default function ListaDetallePage() {
   const porcentajeCompletado = totalItems > 0 ? Math.round((itemsAgregados / totalItems) * 100) : 0;
   
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50 pb-24">
       {/* Encabezado */}
       <div className="bg-white p-4 shadow-sm">
         <div className="flex items-center space-x-4">
@@ -111,25 +111,7 @@ export default function ListaDetallePage() {
       </div>
       
       {/* Contenido principal */}
-      <div className="flex-1 overflow-y-auto pb-24">
-        {/* Botón flotante para agregar ítems */}
-        <div className="fixed bottom-4 right-4 z-10">
-          <button
-            onClick={() => {
-              setMostrarAgregarItem(!mostrarAgregarItem);
-              if (!mostrarAgregarItem) {
-                // Scroll to top when opening the add item panel
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-            className="w-14 h-14 bg-[#FA8603] text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transform transition-transform duration-150"
-            aria-label="Agregar ítems"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </button>
-        </div>
+      <div className="flex-1 overflow-y-auto pb-32">
         
         {/* Panel para agregar ítems */}
         <div className={`bg-white shadow-md transition-all duration-300 ease-in-out transform ${mostrarAgregarItem ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}>
@@ -154,7 +136,7 @@ export default function ListaDetallePage() {
             </div>
             
             {/* Lista de productos */}
-            <div className="max-h-[60vh] overflow-y-auto -mx-4">
+            <div className="max-h-[50vh] overflow-y-auto -mx-4">
               {alimentosFiltrados.map((producto: Alimento) => (
                 <div 
                   key={producto.id}
@@ -188,41 +170,67 @@ export default function ListaDetallePage() {
               ))}
             </div>
             
-            <div className="mt-6 mb-4 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Cantidad:</span>
-              <div className="flex items-center space-x-3">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCantidad(prev => Math.max(1, prev - 1));
-                  }}
-                  className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
-                  aria-label="Reducir cantidad"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                </button>
-                <span className="w-10 text-center text-lg font-medium">{cantidad}</span>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCantidad(prev => prev + 1);
-                  }}
-                  className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
-                  aria-label="Aumentar cantidad"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 5V19M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                </button>
+            {/* Fixed bottom bar for quantity selector - only shown when adding items */}
+            {mostrarAgregarItem && (
+              <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-20">
+                <div className="max-w-md mx-auto">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Cantidad:</span>
+                    <div className="flex items-center space-x-3">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCantidad(prev => Math.max(1, prev - 1));
+                        }}
+                        className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
+                        aria-label="Reducir cantidad"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                      <span className="w-10 text-center text-lg font-medium">{cantidad}</span>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCantidad(prev => prev + 1);
+                        }}
+                        className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
+                        aria-label="Aumentar cantidad"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 5V19M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         
+        {/* Floating action button */}
+        <div className="fixed bottom-24 right-4 z-10">
+          <button 
+            onClick={() => setMostrarAgregarItem(!mostrarAgregarItem)}
+            className="w-14 h-14 bg-[#FA8603] text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+            aria-label="Agregar ítem"
+          >
+            {mostrarAgregarItem ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            )}
+          </button>
+        </div>
+        
         {/* Lista de ítems */}
-        <div className="p-4 space-y-3">
+        <div className="p-4 space-y-3 pb-20">
           {lista.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
               <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4">
