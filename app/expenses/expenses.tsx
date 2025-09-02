@@ -1,81 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { useGastos } from '../context/GastosContext';
 import { useSettings } from '../context/SettingsContext';
+import { useInventario } from '../context/InventarioContext';
+import { useListas } from '../context/ListasContext';
 import alimentosData from '../components/alimentos.json';
 
-// Definición del tipo para los gastos
-interface Gasto {
+// Definición del tipo para los gastos de comida
+interface GastoComida {
   id: string;
-  descripcion: string;
-  monto: number;
-  categoria: string;
-  categoriaIcono: string;
-  fecha: string;
-}
-
-// Interfaz para los ítems de comida
-interface ComidaItem {
-  id: number;
   nombre: string;
-  icon: string;
-  precio: number;
+  monto: number;
+  icono: string;
+  fecha: string;
+  cantidad: number;
 }
-
-// Convertir datos de alimentos al tipo ComidaItem
-const COMIDAS: ComidaItem[] = alimentosData as ComidaItem[];
 
 export default function Expenses() {
   // Usar los contextos
-  const { gastos, agregarGasto: agregarGastoContext, totalGastos } = useGastos();
-  const { convertToCurrentCurrency, formatCurrency } = useSettings();
-  
-  // Estado para controlar la visibilidad del modal de nuevo gasto
-  const [mostrarModal, setMostrarModal] = useState(false);
+  const { formatCurrency } = useSettings();
+  const { inventario } = useInventario();
+  const { listas } = useListas();
   
   // Estado para búsqueda de comidas
   const [busqueda, setBusqueda] = useState('');
   
-  // Filtrar comidas por búsqueda
-  const comidasFiltradas = COMIDAS.filter(comida =>
-    comida.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  // Obtener historial de movimientos de listas a inventario
+  const [historialMovimientos, setHistorialMovimientos] = useState<GastoComida[]>([]);
+  
+  // Cargar el historial de movimientos
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const historial = localStorage.getItem('historialAlimentos');
+      if (historial) {
+        const movimientos = JSON.parse(historial);
+        // Procesar el historial para mostrar solo los movimientos de listas a inventario
+        const movimientosProcesados = movimientos.map((mov: any) => ({
+          id: mov.id || Date.now().toString(),
+          nombre: mov.nombre,
+          monto: mov.precio || 0,
+          icono: mov.icon || '🍽️',
+          fecha: mov.fecha || new Date().toISOString(),
+          cantidad: mov.cantidad || 1
+        }));
+        setHistorialMovimientos(movimientosProcesados);
+      }
+    }
+  }, [inventario]);
+  
+  // Filtrar movimientos por búsqueda
+  const movimientosFiltrados = historialMovimientos.filter(movimiento =>
+    movimiento.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
   
-  // Agregar un ítem de comida como gasto
-  const agregarComidaComoGasto = (comida: ComidaItem) => {
-    agregarGastoContext({
-      descripcion: comida.nombre,
-      monto: comida.precio,
-      categoria: 'Comida',
-      categoriaIcono: comida.icon,
-      fecha: new Date().toISOString()
-    });
-  };
-  
-  // Agregar un nuevo gasto manual
-  const agregarGasto = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const descripcion = formData.get('descripcion') as string;
-    const monto = formData.get('monto') as string;
-    
-    if (!descripcion || !monto) {
-      alert('Por favor completa todos los campos');
-      return;
-    }
-    
-    const montoEnCOP = parseFloat(monto.replace(/[^0-9]/g, ''));
-    
-    agregarGastoContext({
-      descripcion,
-      monto: montoEnCOP,
-      categoria: 'Otro',
-      categoriaIcono: '💵',
-      fecha: new Date().toISOString()
-    });
-    
-    // Cerrar el modal
-    setMostrarModal(false);
-  };
+  // Calcular el total gastado en comidas
+  const totalGastado = historialMovimientos.reduce(
+    (total, mov) => total + (mov.monto * mov.cantidad), 
+    0
+  );
   
   // Formatear fecha
   const formatearFecha = (fechaISO: string) => {
@@ -88,50 +69,41 @@ export default function Expenses() {
     });
   };
 
-  // Calcular el total de gastos de comida
-  const totalGastosComida = gastos
-    .filter(gasto => gasto.categoria === 'Comida')
-    .reduce((total, gasto) => total + gasto.monto, 0);
-
   return (
     <div className="flex flex-col bg-white w-full min-h-screen">
       {/* Encabezado */}
       <div className="p-4 bg-[#FA8603] text-white">
-        <h1 className="text-2xl font-bold mb-2">Gastos</h1>
-        <p className="text-sm opacity-90">Total gastado en la lista</p>
+        <h1 className="text-2xl font-bold mb-2">Gastos de Comida</h1>
+        <p className="text-sm opacity-90">Resumen de compras de alimentos</p>
       </div>
       
-      {/* Monto total */}
-      <div className="p-6 bg-white shadow-sm">
-        <div className="text-4xl font-bold text-center">
-          {formatCurrency(totalGastosComida)}
+      {/* Tarjeta de resumen */}
+      <div className="bg-white shadow-sm mx-4 mt-4 p-6 rounded-xl border border-gray-100">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm text-gray-500">Total gastado</p>
+            <p className="text-3xl font-bold text-gray-900">{formatCurrency(totalGastado)}</p>
+          </div>
+          <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+            <span className="text-2xl">💰</span>
+          </div>
         </div>
-        <p className="text-center text-gray-500 text-sm mt-2">
-          {gastos.length} {gastos.length === 1 ? 'artículo' : 'artículos'} en la lista
-        </p>
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Total de artículos</span>
+            <span className="font-medium">{historialMovimientos.length}</span>
+          </div>
+        </div>
       </div>
       
-      {/* Botón de agregar gasto */}
-      <div className="p-4">
-        <button
-          onClick={() => setMostrarModal(true)}
-          className="w-full bg-[#FA8603] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          Agregar Gasto Manual
-        </button>
-      </div>
-      
-      {/* Lista de comidas */}
-      <div className="p-4">
-        <div className="relative mb-4">
+      {/* Barra de búsqueda */}
+      <div className="px-4 mt-6">
+        <div className="relative">
           <input
             type="text"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar comida..."
+            placeholder="Buscar en gastos..."
             className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FA8603] focus:border-transparent"
           />
           <span className="absolute left-3 top-3.5 text-gray-400">
@@ -141,79 +113,42 @@ export default function Expenses() {
             </svg>
           </span>
         </div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {comidasFiltradas.map((comida) => (
-            <button
-              key={comida.id}
-              onClick={() => agregarComidaComoGasto(comida)}
-              className="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
-            >
-              <span className="text-2xl mb-2">{comida.icon}</span>
-              <span className="text-sm font-medium text-gray-800">{comida.nombre}</span>
-              <span className="text-sm text-[#FA8603] font-medium mt-1">{formatCurrency(comida.precio)}</span>
-            </button>
-          ))}
-        </div>
       </div>
-
-      {/* Modal para agregar nuevo gasto manual */}
-      {mostrarModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-[#FA8603] mb-4">Agregar Gasto Manual</h2>
-            
-            <form onSubmit={agregarGasto}>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-medium mb-1">
-                  Descripción
-                </label>
-                <input
-                  type="text"
-                  name="descripcion"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FA8603] focus:border-transparent"
-                  placeholder="Ej. Compra en el supermercado"
-                  required
-                />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-medium mb-1">
-                  Monto (COP)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2 text-gray-500">$</span>
-                  <input
-                    type="text"
-                    name="monto"
-                    className="w-full pl-8 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FA8603] focus:border-transparent"
-                    placeholder="0"
-                    required
-                    pattern="[0-9]*"
-                    inputMode="numeric"
-                  />
+      
+      {/* Lista de gastos */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {movimientosFiltrados.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4">
+              <span className="text-2xl">🛒</span>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No hay gastos registrados</h3>
+            <p className="text-gray-500 text-sm">Los artículos que muevas de listas a inventario aparecerán aquí</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {movimientosFiltrados.map((movimiento) => (
+              <div 
+                key={movimiento.id}
+                className="flex items-center p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow transition-shadow"
+              >
+                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-xl mr-3">
+                  {movimiento.icono}
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium text-gray-900">{movimiento.nombre}</div>
+                  <div className="text-xs text-gray-500">{formatearFecha(movimiento.fecha)}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-medium">{formatCurrency(movimiento.monto * movimiento.cantidad)}</div>
+                  <div className="text-xs text-gray-500">{movimiento.cantidad} {movimiento.cantidad === 1 ? 'unidad' : 'unidades'}</div>
                 </div>
               </div>
-              
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setMostrarModal(false)}
-                  className="px-4 py-2 text-gray-600 font-medium rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#FA8603] text-white font-medium rounded-lg hover:bg-[#e67a00] transition-colors"
-                >
-                  Agregar Gasto
-                </button>
-              </div>
-            </form>
+            ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
     </div>
   );
 }
