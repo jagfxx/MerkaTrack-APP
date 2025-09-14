@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { useListas } from '@/context/ListasContext';
-import { useSettings } from '@/context/SettingsContext';
+import { useNavigate } from 'react-router-dom';
+import { useListas } from '../context/ListasContext';
+import { useSettings } from '../context/SettingsContext';
 
 interface Lista {
   id: string;

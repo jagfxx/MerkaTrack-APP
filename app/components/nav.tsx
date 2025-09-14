@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation } from "react-router-dom";
 import { FaList, FaChartBar, FaHome, FaMoneyBillWave, FaCog } from "react-icons/fa";
 
 export function BottomNav() {

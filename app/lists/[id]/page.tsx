@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useListas } from '../../context/ListasContext';
 import { useSettings } from '../../context/SettingsContext';
 import alimentosData from '../../components/alimentos.json';
