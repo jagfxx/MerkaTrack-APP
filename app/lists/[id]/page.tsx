@@ -80,7 +80,7 @@ export default function ListaDetallePage() {
   const porcentajeCompletado = totalItems > 0 ? Math.round((itemsAgregados / totalItems) * 100) : 0;
   
   return (
-    <div className="flex flex-col h-screen bg-gray-50 pb-24">
+  <div className="flex flex-col h-screen bg-gray-50 pb-24 relative">
       {/* Encabezado */}
       <div className="bg-white p-4 shadow-sm">
         <div className="flex items-center space-x-4">
@@ -111,8 +111,8 @@ export default function ListaDetallePage() {
         </div>
       </div>
       
-      {/* Contenido principal */}
-      <div className="flex-1 overflow-y-auto pb-32">
+  {/* Contenido principal con más espacio inferior para el recuadro fijo */}
+  <div className="flex-1 overflow-y-auto pb-36">
         
         {/* Panel para agregar ítems */}
         <div className={`bg-white shadow-md transition-all duration-300 ease-in-out transform ${mostrarAgregarItem ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}>
@@ -173,50 +173,41 @@ export default function ListaDetallePage() {
             
             {/* Fixed bottom bar for quantity selector - only shown when adding items */}
             {mostrarAgregarItem && (
-              <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-20">
-                <div className="max-w-md mx-auto">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Cantidad:</span>
-                    <div className="flex items-center space-x-3">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCantidad(prev => Math.max(1, prev - 1));
-                        }}
-                        className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
-                        aria-label="Reducir cantidad"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                      </button>
-                      <span className="w-10 text-center text-lg font-medium">{cantidad}</span>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCantidad(prev => prev + 1);
-                        }}
-                        className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
-                        aria-label="Aumentar cantidad"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 5V19M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+              <div className="fixed left-0 bottom-20 w-full bg-white border-t border-gray-200 p-4 shadow-lg z-40 flex items-center justify-between" style={{boxShadow: '0 -2px 8px rgba(0,0,0,0.08)'}}>
+                <span className="text-sm font-medium text-gray-700">Cantidad:</span>
+                <div className="flex items-center space-x-3">
+                  <button 
+                    onClick={() => setCantidad(prev => Math.max(1, prev - 1))}
+                    className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
+                    aria-label="Reducir cantidad"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </button>
+                  <span className="w-10 text-center text-lg font-medium">{cantidad}</span>
+                  <button 
+                    onClick={() => setCantidad(prev => prev + 1)}
+                    className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors"
+                    aria-label="Aumentar cantidad"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 5V19M5 12H19" stroke="#374151" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             )}
           </div>
         </div>
         
-        {/* Floating action button */}
-        <div className="fixed bottom-24 right-4 z-10">
+        {/* Floating action button - más arriba para no tapar el recuadro fijo */}
+  <div className="fixed right-6 bottom-64 z-30 flex justify-end">
           <button 
             onClick={() => setMostrarAgregarItem(!mostrarAgregarItem)}
-            className="w-14 h-14 bg-[#FA8603] text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+            className="w-16 h-16 bg-[#FA8603] text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105"
             aria-label="Agregar ítem"
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
           >
             {mostrarAgregarItem ? (
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -327,23 +318,31 @@ export default function ListaDetallePage() {
         </div>
       </div>
       
-      {/* Resumen */}
-      <div className="bg-white border-t border-gray-200 p-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className="font-medium">Total estimado:</span>
-          <span className="text-xl font-bold">
-            {formatCurrency(lista.total)}
-          </span>
+      {/* Resumen fijo en la parte inferior, sin corte */}
+      <div className="fixed left-0 bottom-0 w-full flex justify-center items-end z-30" style={{pointerEvents: 'none'}}>
+        <div className="w-[95%] mb-20 bg-white rounded-2xl shadow-lg border border-gray-200 p-4" style={{pointerEvents: 'auto', position: 'relative'}}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="font-medium">Total estimado:</span>
+            <span className="text-xl font-bold">
+              {formatCurrency(
+                lista.items?.reduce((acc: number, item: any) => {
+                  const precio = typeof item.precioUnitario === 'number' ? item.precioUnitario : item.precio;
+                  const cantidad = typeof item.cantidad === 'number' ? item.cantidad : 1;
+                  return acc + (Number(precio) * Number(cantidad));
+                }, 0)
+              )}
+            </span>
+          </div>
+          <button
+            className="w-full bg-[#FA8603] text-white py-3 rounded-xl font-bold mb-2"
+            style={{marginBottom: '0.5rem', position: 'relative', zIndex: 2}}
+            onClick={() => {
+              alert('Función de compartir lista en desarrollo');
+            }}
+          >
+            Compartir Lista
+          </button>
         </div>
-        <button
-          className="w-full bg-[#FA8603] text-white py-3 rounded-xl font-bold"
-          onClick={() => {
-            // Aquí podrías agregar la lógica para compartir la lista
-            alert('Función de compartir lista en desarrollo');
-          }}
-        >
-          Compartir Lista
-        </button>
       </div>
     </div>
   );

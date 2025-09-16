@@ -77,7 +77,14 @@ export default function ListsPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium">
-                      {formatCurrency(lista.items.reduce((acc: number, item: any) => acc + (item.precio * item.cantidad), 0))}
+                      {formatCurrency(
+                        lista.items.reduce((acc: number, item: any) => {
+                          // Usar precioUnitario si existe, si no usar precio
+                          const precio = typeof item.precioUnitario === 'number' ? item.precioUnitario : item.precio;
+                          const cantidad = typeof item.cantidad === 'number' ? item.cantidad : 1;
+                          return acc + (Number(precio) * Number(cantidad));
+                        }, 0)
+                      )}
                     </p>
                     <button 
                       onClick={() => navigate(`/lists/${lista.id}`)}
